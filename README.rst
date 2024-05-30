@@ -1,5 +1,7 @@
 ================================
-Project is currently unsupported
+Pyhive project has been donated to Apache Kyuubi.
+
+You can follow it's development and report any issues you are experiencing here: https://github.com/apache/kyuubi/tree/master/python/pyhive 
 ================================
 
 
