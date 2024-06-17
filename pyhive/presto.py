@@ -172,6 +172,15 @@ class Cursor(common.DBAPICursor):
 
         requests_kwargs = dict(requests_kwargs) if requests_kwargs is not None else {}
 
+        headers = requests_kwargs.get('headers', {})
+        headers = {
+            'X-Presto-Catalog': self._catalog,
+            'X-Presto-Schema': self._schema,
+            'X-Presto-Source': self._source,
+            'X-Presto-User': self._username,
+        }
+        requests_kwargs['headers'] = headers
+
         if KerberosRemoteServiceName is not None:
             from requests_kerberos import HTTPKerberosAuth, OPTIONAL
 
@@ -194,7 +203,7 @@ class Cursor(common.DBAPICursor):
         else:
             if password is not None and 'auth' in requests_kwargs:
                 raise ValueError("Cannot use both password and requests_kwargs authentication")
-            for k in ('method', 'url', 'data', 'headers'):
+            for k in ('method', 'url', 'data'):
                 if k in requests_kwargs:
                     raise ValueError("Cannot override requests argument {}".format(k))
             if password is not None:
@@ -273,8 +282,8 @@ class Cursor(common.DBAPICursor):
             '{}:{}'.format(self._host, self._port), '/v1/statement', None, None, None))
         _logger.info('%s', sql)
         _logger.debug("Headers: %s", headers)
-        response = self._requests_session.post(
-            url, data=sql.encode('utf-8'), headers=headers, **self._requests_kwargs)
+        response = self._requests_session.post(url, data=sql.encode('utf-8'),  **self._requests_kwargs)
+            #url, data=sql.encode('utf-8'), headers=headers, **self._requests_kwargs)
         self._process_response(response)
 
     def cancel(self):
